@@ -1,0 +1,170 @@
+
+
+
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset = "UTF-8">
+    <title>
+    IPP: Test results
+    </title>
+
+<style>
+    body /*  pozadie  */
+    {
+        background-color: #ECFFEE;
+        margin: 30px; 
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 15px;
+    }
+    hr /* oddeľujúca čiara */
+    {
+        display: block;
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+        margin-left: auto;
+        margin-right: auto;
+        border-style: inset;
+        border-width: 3px;
+    }
+    table th, td
+    {
+        border: 1.2px solid black; 
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 7px;
+        padding-top: 7px;
+        font-size: 15px;
+    }
+    table th
+    {
+        background-color: #BFDFFF;
+        text-align: center;
+    }
+    table tr:nth-child(even)
+    {
+        background-color: #E5F2FF;
+    }
+    table tr:nth-child(odd)
+    {
+        background-color: #D3E9FF
+    }
+
+    /* my classes */
+    .header /* hlavička  */
+    {
+        font-size: 40px; 
+        color: #083059; 
+        text-align: center; 
+    }
+    .sum /* suma všetkých testov - prehľad */
+    {
+        font-size: 30px; 
+        color: #083059; 
+        text-align: left; 
+    }
+    .test_suite_header /* nadpis pre jednotlivé test-suites */
+    {
+        text-align: center;
+        font-size: 30px;   
+        color: #083059;
+        padding-bottom: 10px;
+    }
+    .passed /*  pozadie pre testy, ktoré prešli */
+    {
+        color: #05B31A
+    }
+    .not-passed /* pozadie pre testy, ktoré neprešli */ 
+    {
+        color: #FF0000
+    }
+</style>
+</head>
+
+<body> 
+<div class = header >
+       <b> IPP 2020 project test results </b>
+</div> 
+
+<div class = sum>  
+    Total tests: <b> 6 </b> 
+    <div class = passed>
+        Total passed tests: <b> 5 </b> 
+    </div>
+
+    <div class = not-passed >
+         Total error tests: <b> 1 </b>
+    </div>
+    <hr>
+</div>
+
+<div class= test_suite_header>
+    <b> Test suites </b>
+    <table align="center">
+        
+        <tr>
+            <th> Test suite </th>
+            <th> Total tests </th>
+            <th> Total passed </th>
+            <th> Total error </th>
+        </tr>
+        <tr>
+                        
+            <tr>
+                <td> parse-only/call/ </td>
+                <td> 6 </td>
+                <td> <div class= passed > 5 </div></td>
+                <td> <div class= not-passed > 1 </div></td>
+            </tr>
+
+        </tr>
+    </table>
+<hr>
+</div>
+
+
+<div class= test_suite_header > 
+                <b>Test suite: </b> parse-only/call/            <table align="center">
+            <tr>
+            <th> Test name </th>
+            <th> Result </th>
+            </tr>
+        <tr> 
+                <td> string.src </td>
+ 
+            <td> <div class = passed> Passed </div></td>
+        </tr>
+        
+        <tr> 
+                <td> int.src </td>
+ 
+            <td> <div class = passed> Passed </div></td>
+        </tr>
+        
+        <tr> 
+                <td> operands.src </td>
+ 
+            <td> <div class = passed> Passed </div></td>
+        </tr>
+        
+        <tr> 
+                <td> ok.src </td>
+                <td> <div class = not-passed> Error </div></td>
+        </tr>
+        
+        <tr> 
+                <td> nil.src </td>
+ 
+            <td> <div class = passed> Passed </div></td>
+        </tr>
+        
+        <tr> 
+                <td> bool.src </td>
+ 
+            <td> <div class = passed> Passed </div></td>
+        </tr>
+        
+</div>
+
+</body>
+</html>

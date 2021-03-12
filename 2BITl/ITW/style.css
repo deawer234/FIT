@@ -1,0 +1,189 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+body{
+    width: 100%;
+    margin:auto;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.content {
+    min-width:768px;
+    max-width:1200px;
+    margin: auto;
+}
+
+a {
+    text-decoration: none;
+    color:inherit;
+}
+
+#menu{
+    background-image: url("img/bg.jpg");
+    padding-bottom: 140px;
+    padding-top: 20px;
+    margin: auto;
+    width: 100%;
+}
+
+#nadpis{
+    width: 100%;
+    float: left;
+    margin-bottom: 50px;
+}
+
+#nadpis h1 a{
+    font-size: 40px;
+    font-style: italic;
+    color: white;
+    word-break: break-all;
+}
+#nadpis h1{
+    color: #d5a17c;
+    font-size: 20px;
+    font-style: italic;
+}
+
+#nadpis h1 span{
+    display: block;
+}
+
+#nav {
+    float: left;
+    width: 100%;
+    color: white;
+    font-size: 14px;
+}
+
+#nav ul li{
+    float: left;
+    padding-right: 10px;
+    list-style-type: none;
+}
+#nav ul li:hover::after{
+    content:url("img/menu_bullet.gif");
+    display: block;
+    width: auto;
+    height: auto;
+}
+
+#about{
+    line-height: 1.6;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background-image: linear-gradient(white, #e3e3e3);
+}
+
+
+
+#about p{
+    font-size: 14px;
+}
+
+#prednasky{
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 14px;
+}
+
+h2{
+    font-size: 18px;
+    color:	#b15e23;
+}
+
+#prednasky h3{
+    font-size: 16px;
+    border-bottom: 1px dashed #d5a17c;
+}
+
+#prednasky p{
+    padding-top: 10px;
+}
+#prehled{
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+#prehled table{
+    width: 50%;
+    border: 3px solid black
+}
+
+th{
+    color: #656565;
+    border-bottom: 2px solid black;
+    border-right: 2px solid black;
+    border-left: 2px dashed black;
+    border-top: 2px dashed black;
+    background-color: #d5a17c;
+}
+
+td{
+    border-top: 1px double black;
+    border-bottom: 1px double black;
+    text-align: center;
+}
+
+#cviceni{
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 14px;
+}
+#cviceni div{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #d5a17c;
+}
+#cviceni h2{
+    float: left;
+    width: 100%;
+}
+#cviceni h3{
+    font-size: 16px;
+}
+#footer{
+    font-size: 14px;
+    background-image: url("img/bg.jpg");
+}
+#kontakt{
+    padding-top: 10px;
+}
+
+#kontakt h2{
+    color: white;
+}
+
+dl{
+    width: 100%;
+}
+
+dt{
+    float: left;
+    width: 15%;
+    color: white;
+}
+
+dd{
+    float: left;
+    width: 85%;
+    color: #d5a17c;
+}
+
+
+#predmety h2{
+    color: white;
+}
+
+#predmety ul{
+    list-style-type: none;
+    color: #d5a17c;
+}
+
+#predmety ul li::before{
+    content: '✓';
+    padding: 10px
+}
+
+
