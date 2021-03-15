@@ -1,2 +1,4 @@
 .IPPcode21
-CALL label
+DEFVAR LF@counter
+MOVE LF@counter int@ahoj
+WRITE LF@counter

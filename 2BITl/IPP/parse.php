@@ -138,9 +138,8 @@ while($line = fgets(STDIN))
             break;
         //<label>
         case "LABEL":
-            //array_push($labelarray, $keyword);
-            if(!empty($keyword[1]))
-                $labelarray[$loc] = $keyword[1];
+            //
+            array_push($labelarray, $keyword[1]);
             $labels++;
             //$lastlabel = $loc;
         case "JUMP":
@@ -296,7 +295,6 @@ while($line = fgets(STDIN))
             }
             if(array_search($keyword[1], $labelarray) !== false)
             {
-                $jumparray[$loc] = $keyword[1];
                 $pos = array_search($keyword[1], $labelarray);
                 if($pos < $loc)
                 {
@@ -306,6 +304,7 @@ while($line = fgets(STDIN))
                 {
                     array_push($jumparray, $keyword[1]);
                 }
+                $jumps++;
             }
             else
             {
@@ -388,14 +387,17 @@ if($header == false)
 }
 for($i = 0; $i < sizeof($jumparray); $i++)
 {
-    if(in_array($jumparray[$i], $labelarray))
-    {
-        $fwjumps++;
-    }
-    else
-    {
-        $badjumps++;
-    }
+    echo($jumparray[0]);
+    if(sizeof($jumparray) != 0){
+        if(in_array($jumparray[$i], $labelarray))
+        {
+            $fwjumps++;
+        }
+        else
+        {
+            $badjumps++;
+        }
+}
 }
 
 for($i = 2; $i < sizeof($argv); $i++)
@@ -444,7 +446,11 @@ exit(0);
 
 function constant_check($string, $argnmr, &$xmlcode)
 {
-    $check = explode('@', $string);
+    $check = explode('@', $string, 2);
+    if(count($check) !== 2)
+    {
+        exit(23);
+    }
     switch($check[0])
     {
         case "bool":
@@ -454,6 +460,13 @@ function constant_check($string, $argnmr, &$xmlcode)
             }
             break;
         case "string":
+            /*$string = [];
+            $counter = 0;
+            for($i = 1;$i < count($check);$i++){
+                if($check[$counter] == "")
+                    $counter++;
+            }
+            for($i = 0; $i < $counter: $i++)*/
             $check[1] = preg_replace('/[&]/', '&amp;', $check[1]);
             $check[1] = preg_replace('/[<]/', "&lt;", $check[1]);
             $check[1] = preg_replace('/[>]/', '&gt;', $check[1]);
@@ -472,23 +485,24 @@ function constant_check($string, $argnmr, &$xmlcode)
             }
             break;
         case "int":
-            /*if (preg_match('/^[0-9]+$/', $check[1])) 
+            if (preg_match('/^[+-]?[\d]+$/', $check[1])) 
             {
-                echo("<arg$argnmr type=\"$check[0]\">$check[1]</arg$argnmr>");
+                break;
             } else {
                 exit(23);
             }
+            /*
             $counter = 0;
             for($i = 0;$i < strlen($check[1]);$i++){
                 if($check[1][$counter] == ' ')
                     $counter++;
             }
-            $check[1] = substr($check[1], $counter, strlen($check[1]));*/
+            $check[1] = substr($check[1], $counter, strlen($check[1]));
             if($check[1] == "")
             {
                 exit(23);
             }
-            break;
+            break;*/
         case "nil":
             if($check[1] !== "nil")
             {
