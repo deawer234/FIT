@@ -1,4 +1,2 @@
 .IPPcode21
-DEFVAR LF@counter
-MOVE LF@counter int@ahoj
-WRITE LF@counter
+WRITE float@0x1.20000000p+0

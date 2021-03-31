@@ -7,11 +7,15 @@ $file;
 $argvs = [];
 $statcall = []; 
 
+//Kontrola argumentů
 if($argc > 1)
 {
     if($argv[1] == "--help")
     {
-        echo("help placeholder");
+        echo("\nSkript načte ze standardního vstupu zdrojový kód v IPPcode21, zkontroluje lexikální a syntaktickou správnost kódu a vypíše na standardní výstup XML reprezentaci.
+        \nSkript pracuje s parametry: \n--help: Vypíše nápovědu.\n--stats=file: Vypíše do souboru file statistiky v parametrech umístěných za tímto --stats.\nStatistiky se vypisují po řádcích dle pořadí v parametrech s možností jejich opakování.
+        \nJe-li uveden pouze parametr --stats bez upřesnění statistik k výpisu, bude výstupem prázdný soubor. 
+        \nParametry statistik: \n--loc: Vypíše počet řádků s instrukcemi (nepočítají se prázdné řádky ani řádky obsahující pouze komentář ani úvodní řádek).\n--comments: Vypíše počet řádků, na kterých se vyskytoval komentář.\n--labes: Vypíše počet definovaných návěští (tj.unikátních možných cílů skoku).\n--jumps: Vypíše počet všech instrukcí návratů z volání a instrukcí pro skoky (souhrnně podmíněné/nepodmíněné skoky a volání)\n--fwjumps: Vypíše počet dopředných skoků\n--backjumps: Vypíše počet zpětných skoků\n--badjumps: Vypíše počet špatných skoků na neexistující návěští\n ");
         exit(0);
     }
     else if(substr($argv[1], 0, 8) == "--stats=")
@@ -28,6 +32,7 @@ if($argc > 1)
 
 $header = false;
 $valid = false;
+$index = 0;
 $labelarray = [];
 $jumparray = [];
 // STATP
@@ -40,6 +45,7 @@ $backjumps = 0;
 $badjumps = 0;
 $lastlabel = 0;
 
+//Lexikální a syntaktická analýza
 while($line = fgets(STDIN))
 {
     $argnmr = 0;
@@ -83,6 +89,9 @@ while($line = fgets(STDIN))
     }
 
     $keyword = explode(' ', trim($line, "\n"));
+    $index = array_search("", $keyword);
+    if($index !== false)
+        unset($keyword[$index]);
     $loc++;
     switch(strtoupper($keyword[0]))
     {
@@ -138,10 +147,12 @@ while($line = fgets(STDIN))
             break;
         //<label>
         case "LABEL":
-            //
-            array_push($labelarray, $keyword[1]);
+            if(preg_match('/[-a-zA-Z_$&%*!?][-a-zA-Z_$&%*!?0-9]*/', $keyword[1])){
+                array_push($labelarray, $keyword[1]);
+            }else{
+                exit(23);
+            }
             $labels++;
-            //$lastlabel = $loc;
         case "JUMP":
         case "CALL":
             if(count($keyword) !== 2)
@@ -252,7 +263,7 @@ while($line = fgets(STDIN))
             }
             array_push($xmlcode, "\t</instruction>");
             break;
-        //no arg
+        //no par
         case "POPFRAME":
         case "PUSHFRAME":
         case "CREATEFRAME":
@@ -381,13 +392,14 @@ while($line = fgets(STDIN))
             exit(22);
     }
 }
+// Pokud neobsahuje header, jedná se o chybu
 if($header == false) 
 {
     exit(21);
 }
+// Rozdělení fwjumps a badjumps
 for($i = 0; $i < sizeof($jumparray); $i++)
 {
-    echo($jumparray[0]);
     if(sizeof($jumparray) != 0){
         if(in_array($jumparray[$i], $labelarray))
         {
@@ -399,7 +411,7 @@ for($i = 0; $i < sizeof($jumparray); $i++)
         }
 }
 }
-
+// Vypíše všechny parametry pro sběr statistik
 for($i = 2; $i < sizeof($argv); $i++)
 {
     switch($argv[$i])
@@ -440,10 +452,13 @@ for($i = 2; $i < sizeof($argv); $i++)
             exit(10);
     }
 }
+// Vypsání XML reprezentace kodu
 array_push($xmlcode, "</program>\n");
 echo(implode("\n", $xmlcode));
 exit(0);
 
+
+// Funkce která kontroluje zda se jedná o konstantu
 function constant_check($string, $argnmr, &$xmlcode)
 {
     $check = explode('@', $string, 2);
@@ -454,19 +469,13 @@ function constant_check($string, $argnmr, &$xmlcode)
     switch($check[0])
     {
         case "bool":
-            if($check[1] != "false" & $check[1] != "true")
+            if($check[1] != "false" | $check[1] != "true")
             {
+                break;
+            }else{
                 exit(23);
             }
-            break;
         case "string":
-            /*$string = [];
-            $counter = 0;
-            for($i = 1;$i < count($check);$i++){
-                if($check[$counter] == "")
-                    $counter++;
-            }
-            for($i = 0; $i < $counter: $i++)*/
             $check[1] = preg_replace('/[&]/', '&amp;', $check[1]);
             $check[1] = preg_replace('/[<]/', "&lt;", $check[1]);
             $check[1] = preg_replace('/[>]/', '&gt;', $check[1]);
@@ -479,7 +488,6 @@ function constant_check($string, $argnmr, &$xmlcode)
                 }
                 else
                 {
-                    
                     exit(23);
                 }
             }
@@ -491,18 +499,13 @@ function constant_check($string, $argnmr, &$xmlcode)
             } else {
                 exit(23);
             }
-            /*
-            $counter = 0;
-            for($i = 0;$i < strlen($check[1]);$i++){
-                if($check[1][$counter] == ' ')
-                    $counter++;
-            }
-            $check[1] = substr($check[1], $counter, strlen($check[1]));
-            if($check[1] == "")
-            {
-                exit(23);
-            }
-            break;*/
+        case "float":
+                if(is_float($check[1]))
+                {
+                    break;
+                } else {
+                    exit(23);
+                }
         case "nil":
             if($check[1] !== "nil")
             {

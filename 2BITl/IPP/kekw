@@ -1,0 +1,71 @@
+.IPPcode21
+DEFVAR GF@%strcat1
+DEFVAR GF@%strcat2
+CREATEFRAME
+JUMP $main
+
+LABEL $ahoj
+PUSHFRAME
+DEFVAR LF@kekw1
+PUSHS int@0
+POPS LF@kekw1
+CREATEFRAME
+PUSHS string@ahoj\010
+PUSHS int@1
+CALL $print
+POPFRAME
+RETURN
+
+LABEL $hi
+PUSHFRAME
+DEFVAR LF@lol1
+PUSHS int@0
+POPS LF@lol1
+CREATEFRAME
+CALL $ahoj
+POPFRAME
+RETURN
+
+LABEL $main
+PUSHFRAME
+CREATEFRAME
+CALL $hi
+POPFRAME
+#CLEARS
+EXIT int@0
+
+LABEL $print
+PUSHFRAME
+DEFVAR LF@argc_print
+POPS LF@argc_print
+DEFVAR LF@last_arg_print
+DEFVAR LF@counter_print
+MOVE LF@counter_print int@0
+DEFVAR LF@increment_print
+MOVE LF@increment_print int@1
+DEFVAR LF@string_print
+MOVE LF@string_print string@
+DEFVAR LF@type_print
+DEFVAR LF@str_print
+MOVE LF@str_print nil@nil
+LABEL while_print
+JUMPIFEQ print_end LF@counter_print LF@argc_print 
+ADD LF@counter_print LF@counter_print LF@increment_print 
+POPS LF@str_print
+TYPE LF@type_print LF@string_print
+JUMPIFEQ none_print LF@type_print string@nil
+WRITE LF@string_print
+JUMP end_none_print
+LABEL none_print
+WRITE string@
+POPFRAME
+RETURN
+LABEL end_none_print
+LT LF@last_arg_print LF@counter_print LF@argc_print
+JUMPIFEQ print_end LF@last_arg_print bool@false
+WRITE LF@str_print
+JUMP while_print
+LABEL print_end
+WRITE LF@str_print
+POPFRAME
+RETURN
