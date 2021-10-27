@@ -1,0 +1,12 @@
+.landscape
+.vscode-server
+.bash_logout
+.bashrc
+.motd_shown
+.profile
+.sudo_as_admin_successful
+.cache/*
+.viminfo
+.wget-hsts
+.bash_history
+settings.json
