@@ -14,7 +14,10 @@
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
+#include <filesystem>
 #include <sstream>
+#include <regex>
 /* OpenSSL headers */
 #include "openssl/bio.h"
 #include "openssl/ssl.h"
