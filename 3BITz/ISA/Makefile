@@ -1,8 +1,11 @@
-popcl : popcl.o 
-	g++ -std=gnu++11 -Wall -Wextra -o popcl popcl.o -lcrypto -lssl
+popcl : popcl.o pop3.o
+	g++ -std=gnu++11 -Wall -Wextra -o popcl popcl.o pop3.o -lcrypto -lssl
 
-popcl.o : popcl.cpp popcl.hpp
+main.o : popcl.cpp popcl.hpp
 	g++ -std=gnu++11 -Wall -Wextra -c -o popcl.o popcl.cpp
 
+pop3.o : pop3.cpp pop3.hpp
+	g++ -std=gnu++11 -Wall -Wextra -c -o pop3.o pop3.cpp
+
 clean:
-	rm *.o popcl xnemec92.tar
+	rm *.o popcl xnemec9.tar

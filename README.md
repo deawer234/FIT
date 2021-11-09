@@ -1,0 +1,2 @@
+# VUT IFJ project
+
