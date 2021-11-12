@@ -1,0 +1,15 @@
+Received: from unknown ([::ffff:94.113.103.204])
+	by email.seznam.cz (szn-ebox-5.0.80) with HTTP;
+	Wed, 03 Nov 2021 15:28:58 +0100 (CET)
+From: <hav.luk.170@seznam.cz>
+To: <isa.shit@seznam.cz>
+Subject: Test email
+Date: Wed, 03 Nov 2021 15:28:58 +0100 (CET)
+Message-Id: <VPT.1eE09.3N9AlP5x3sY.1XWfog@seznam.cz>
+Mime-Version: 1.0 (szn-mime-2.1.14)
+X-Mailer: szn-ebox-5.0.80
+Content-Type: text/plain;
+	charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Test ty p=C3=AD=C4=8Do
