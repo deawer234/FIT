@@ -1,0 +1,15 @@
+Received: from unknown ([::ffff:84.16.99.217])
+	by email.seznam.cz (szn-ebox-5.0.80) with HTTP;
+	Sat, 06 Nov 2021 13:10:23 +0100 (CET)
+From: <hav.luk.170@seznam.cz>
+To: <isa.shit@seznam.cz>
+Subject: Delete that
+Date: Sat, 06 Nov 2021 13:10:23 +0100 (CET)
+Message-Id: <Xnd.1eE0x.6LqIruyPggt.1XXd2l@seznam.cz>
+Mime-Version: 1.0 (szn-mime-2.1.14)
+X-Mailer: szn-ebox-5.0.80
+Content-Type: text/plain;
+	charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+asdasdasd

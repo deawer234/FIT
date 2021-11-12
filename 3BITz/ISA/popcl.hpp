@@ -1,27 +1,4 @@
-#include <iostream>
-#include <string>
-#include <algorithm>
-#include <fstream>
-#include <string.h>
-#include <iostream>
-#include <string>
-#include <algorithm>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <filesystem>
-#include <sstream>
-#include <regex>
-/* OpenSSL headers */
-#include "openssl/bio.h"
-#include "openssl/ssl.h"
-#include "openssl/err.h"
+#include "pop3.hpp"
 
 struct clargs {
     std::string server;
