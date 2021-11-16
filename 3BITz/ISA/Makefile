@@ -1,11 +1,23 @@
-popcl : popcl.o pop3.o
-	g++ -std=gnu++11 -Wall -Wextra -o popcl popcl.o pop3.o -lcrypto -lssl
+CC=g++
+CFLAGS=-std=gnu++11 -Wall -Wextra
+PROJECT=popcl
 
-main.o : popcl.cpp popcl.hpp
-	g++ -std=gnu++11 -Wall -Wextra -c -o popcl.o popcl.cpp
+all : $(PROJECT)
 
 pop3.o : pop3.cpp pop3.hpp
-	g++ -std=gnu++11 -Wall -Wextra -c -o pop3.o pop3.cpp
+	$(CC) $(CFLAGS) -c pop3.cpp -o pop3.o
 
-clean:
-	rm *.o popcl xnemec9.tar
+$(PROJECT).o : $(PROJECT).cpp popcl.hpp
+	$(CC) $(CFLAGS) -c $(PROJECT).cpp -o $(PROJECT).o
+
+$(PROJECT) : $(PROJECT).o pop3.o
+	$(CC) $(CFLAGS) $(PROJECT).o pop3.o -lcrypto -lssl -o $(PROJECT)
+
+clean :
+	rm -f $(PROJECT) *.o xnemec92.tar
+
+clean-o :
+	rm -f *.o
+
+tar : clean
+	tar -cvf xnemec92.tar pop3.cpp pop3.hpp popcl.cpp popcl.hpp Makefile err.hpp manual.pdf README

@@ -1,5 +1,3 @@
-
-
 #include "popcl.hpp"
 
 using namespace std;
@@ -57,14 +55,22 @@ bool pop3::load_ca(SSL_CTX *ctx){
 *   Metoda hledá konec zprávy ze serveru.
 */
 bool pop3::end_of_message(string message){
-    size_t pos = string::npos;
-    
-
-    return true;
+    if(retron){
+        if(message.find("\r\n.\r\n") != string::npos){
+            return true;
+        }
+    }
+    else{
+        if(message.find_last_of("\r\n") != string::npos){
+            return true;
+        }
+    }
+    return false;
 }
 
 /*
 *   Metoda posílá serveru příkaz RETR num.
+*   Ke stažení zpráv na serveru;
 */
 bool pop3::retrieve_messages(int num){
     bool retval = false;
@@ -76,42 +82,32 @@ bool pop3::retrieve_messages(int num){
 }
 
 /*
+*   Metoda odešle příkaz serveru
+*/
+void pop3::send_command(string command){
+    if(BIO_write(bio,command.c_str(),command.length()) <= 0){
+        if(!BIO_should_retry(bio))
+        {
+            throw_error("Nepodařilo se odeslat zprávu serveru", SERVER_COMMUNICATION_ERR);
+        }
+    }
+}
+
+/*
 *   Metoda čeká na celou zprávu ze serveru.
 *   Po přijetí zprávy ji uloží do proměnné response a ukládá pořád, dokud nenajde konec zprávy.
 *   Nakonec vyhodnotí zda se nejedná o error.
 */
 bool pop3::response_ok(){
     string reply;
-    size_t pos;
     response.clear();
-    char *buff = NULL;
-    buff = new char[1024];
     while(1){
-        //memset(buff, '\0', 1024); 
-        //cout << "helo\n";
-        auto len = BIO_read(bio, buff, 1024);
-        buff[len] = '\0';
-        reply += buff;
-
-        if(retron){
-            if(reply.find("\r\n.\r\n") != string::npos){
-                break;
-            }
+        reply.append(read());
+        if(end_of_message(reply)){
+            break;
         }
-        else{
-            if(reply.find_last_of("\r\n") != string::npos){
-                break;
-            }
-        }
-        //reading = end_of_message(reply);
-        //reply = read();
-        
     }
     response = reply;
-    delete[] buff;
-    //if(!retron)
-    //    cout << response.substr(0, response.find_first_of('\n'));
-    //cout << response << endl;
     if(response.substr(0, 3) == "+OK"){
         return true;
     }else{
@@ -119,15 +115,19 @@ bool pop3::response_ok(){
     }
 }
 
+// Metoda očekává odpoved ze serveru a vrací ji.
 string pop3::read(){
-    
-    
-    
-    //if(BIO_read(bio, buff, 1024) == 0){
-    //    throw_error("Nepodařilo se získat odpověď ze serveru", SERVER_COMMUNICATION_ERR);
-    //}
-
-    return "";
+    char buff[1024];
+    auto len = BIO_read(bio, buff, 1024);
+    if(len == 0){
+        throw_error("Chyba komunikace se serverem", SERVER_COMMUNICATION_ERR);
+    }else if(len < 0){
+        if(!BIO_should_retry(bio)){
+            throw_error("Chyba komunikace se serverem", SERVER_COMMUNICATION_ERR);
+        }
+    }
+    buff[len] = '\0';
+    return buff;
 }
 
 
@@ -186,15 +186,6 @@ int pop3::connect_to_server_secured(){
 }
 
 /*
-*   Metoda odešle příkaz serveru
-*/
-void pop3::send_command(string command){
-    if(BIO_write(bio,command.c_str(),command.length()) <= 0){
-        throw_error("Nepodařilo se odeslat zprávu serveru", SERVER_COMMUNICATION_ERR);
-    }
-}
-
-/*
 *   Metoda zahajuje přihlašování k serveru pomocí přihlašovacích údajů ze souboru
 */
 void pop3::login(){
@@ -238,7 +229,6 @@ bool pop3::is_message_new(string inmessage){
             }
         }
     }
-    cout << response << endl;
     closedir(dp);
     return true;
 }
@@ -250,7 +240,9 @@ bool pop3::is_message_new(string inmessage){
 */
 void pop3::process_message(){
     send_command("STAT\r\n");
-    response_ok();
+    if(!response_ok())
+        throw_error("Chybná odpověď serveru", SERVER_RESPONSE_ERR);
+
     int enumber = 0;
     if(response != ""){
         enumber = stoi(response.substr(response.find(" ") + 1, response.find(" ", 5) - 4));
@@ -258,59 +250,59 @@ void pop3::process_message(){
     if(enumber == 0){
         cout << "Schránka neobsahuje žádné zprávy\n";
     }else{
-        if(!del){
-            int newnum = 0;
-            mkdir(outdir.c_str(), 0700);
-            for(int i = 0; i < enumber; i++)
-            {
-                retrieve_messages(i);
-                string filename;
-                smatch id;
-                regex reg("[M|m]essage-[I|i][D|d]:(\\s?)+<.*>");
-                regex_search(response, id, reg);
-                filename = id.str();
+        regex reg("[M|m]essage-[I|i][D|d]:(\\s?)+<.*>");
+        int newnum = 0;
+        mkdir(outdir.c_str(), 0700);
+        for(int i = 0; i < enumber; i++)
+        {
+            if(!retrieve_messages(i))
+                throw_error("Zpráva ke stažení neexistuje", SERVER_RESPONSE_ERR);
+            string filename;
+            smatch id;
+            regex_search(response, id, reg);
+            filename = id.str();
 
-                if(filename == ""){
-                    regex re("[M|m]essage-[I|i][D|d]:(\\s?)+<.*>");
-                    regex_search(response, id, re);
-                    filename = "email_" + to_string(i+1);
-                }else{
-                    filename = filename.substr(filename.find_first_of('<') + 1, filename.length());
-                    filename.erase(filename.find_first_of('>'), 1);
-                }
-
-                size_t pos;
-                while((pos = filename.find('/')) != string::npos){
-                    filename.replace(pos, 1, "a");
-                }
-                
-
-                if(!new_messages || (new_messages && is_message_new(filename + ".eml"))){
-                    ofstream file(outdir + "/" + filename + ".eml");
-                    response.erase(response.length()-3, 3);
-                    response.erase(0, response.find_first_of("\r\n") + 2);
-                    file << response;
-                    newnum++;
-                }
-            }
-            if(new_messages){
-                if(newnum == 0){
-                    cout << "Schránka neobsahuje žádné nové zprávy\n";
-                }else{
-                    cout << "Staženo " + to_string(newnum) + " nových zpráv\n";
-                }
+            if(filename == ""){
+                filename = "email_" + to_string(i+1);
             }else{
-                cout << "Staženo " + to_string(enumber) + " zpráv\n";
+                filename = filename.substr(filename.find_first_of('<') + 1, filename.length());
+                filename.erase(filename.find_first_of('>'), 1);
             }
-        }else{ //Pokud byl zadán pouze argument -d, odešle příkaz ke smazání všech zpráv na serveru
-            for(int i = 0; i < enumber; i++)
-            {
-                send_command("DELE " + to_string(i + 1) + "\r\n");
-                if(!response_ok()){
-                    throw_error("Zpráva k vymazání neexistuje", SERVER_COMMUNICATION_ERR);
+
+            size_t pos;
+            while((pos = filename.find('/')) != string::npos){
+                filename.replace(pos, 1, "a");
+            }
+            
+
+            if(!new_messages || (new_messages && is_message_new(filename + ".eml"))){
+                ofstream file(outdir + "/" + filename + ".eml");
+                response.erase(response.length()-3, 3);
+                response.erase(0, response.find_first_of("\r\n") + 2);
+                file << response;
+                newnum++;
+                if(del){
+                    send_command("DELE " + to_string(i + 1) + "\r\n");
+                    if(!response_ok()){
+                        throw_error("Zpráva k vymazání neexistuje.", SERVER_COMMUNICATION_ERR);
+                    }
                 }
             }
-            cout << "Obsah schránky byl vymazán" << endl;
+        }
+        if(new_messages && !del){
+            if(newnum == 0){
+                cout << "Schránka neobsahuje žádné nové zprávy.\n";
+            }else{
+                cout << "Staženo " + to_string(newnum) + " nových zpráv.\n";
+            }
+        }else if(del){
+            if(new_messages){
+                cout << "Smazáno " + to_string(newnum) + " zpráv.\n";
+            }else{
+                cout << "Obsah schránky byl vymazán.\n";
+            }
+        }else{
+            cout << "Staženo " + to_string(enumber) + " zpráv.\n";
         }
     }
 }
@@ -320,7 +312,8 @@ void pop3::process_message(){
 */
 void pop3::quit(){
     send_command("QUIT\r\n");
-    response_ok();
+    if(!response_ok())
+        throw_error("Chybná odpověď serveru", SERVER_RESPONSE_ERR);
 }
 
 /*
@@ -329,7 +322,8 @@ void pop3::quit(){
 */
 void pop3::init_stls(){
     send_command("STLS\r\n");
-    response_ok();
+    if(!response_ok())
+        throw_error("Server nepodporuje STLS připojení", SERVER_RESPONSE_ERR);
 
     SSL_CTX *ctx;
     ctx = SSL_CTX_new(SSLv23_client_method());

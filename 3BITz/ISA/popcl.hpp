@@ -2,7 +2,7 @@
 
 struct clargs {
     std::string server;
-    int port;
+    int port = -1;
     bool pop3s = false; //-T
     bool stls = false; //-S
     std::string certfile;
@@ -14,3 +14,4 @@ struct clargs {
 };
 
 int main(int argc, char *argv[]);
+void print_help();

@@ -38,6 +38,7 @@ class pop3{
         std::string authfile;
         std::string certfile;
         std::string certaddr;
+        
         int port;
         //Privátní funkce
         bool response_ok();
